@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 class Grade(models.Model):
     grade_name = models.CharField(max_length=100, null=True)
 
+    def __str__(self):
+        return self.grade_name
+
 class Subject(models.Model):
     subject_name = models.CharField(max_length=150, null=True)
     grade = models.ManyToManyField(Grade)
@@ -44,7 +47,7 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     question_status = models.CharField(max_length=150, choices=STATUS)
-    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    diagram_image = models.ImageField(upload_to='images/', null=True, blank=True)
     user_ratings = models.ManyToManyField(User, through='QuestionRating')
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
     total_ratings = models.PositiveIntegerField(default=0)
@@ -52,6 +55,15 @@ class Question(models.Model):
     
     def __str__(self):
         return self.question_text  
+    
+class AnswerOption(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer_option')
+    answer_text = models.TextField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.answer_text
 
 class QuestionRating(models.Model):
     RATING_CHOICES = [
