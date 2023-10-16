@@ -57,7 +57,7 @@ class Question(models.Model):
         return self.question_text  
     
 class AnswerOption(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer_option')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer_options')
     answer_text = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
