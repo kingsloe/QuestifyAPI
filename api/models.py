@@ -4,24 +4,35 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 class Grade(models.Model):
-    grade_name = models.CharField(max_length=100, null=True)
+    grade_name = models.CharField(max_length=100, default='')
 
     def __str__(self):
         return self.grade_name
 
 class Subject(models.Model):
-    subject_name = models.CharField(max_length=150, null=True)
-    grade = models.ManyToManyField(Grade)
+    subject_name = models.CharField(max_length=150, default='')
+    grade = models.ManyToManyField(Grade, related_name='grades')
 
     def __str__(self):
         return self.subject_name
 
 class Topic(models.Model):
-    topic_name = models.CharField(max_length=150, null=True)
-    subjects = models.ManyToManyField('Subject', related_name='topics')
+    topic_name = models.CharField(max_length=150, default='')
+    grade = models.ManyToManyField(Grade, related_name='topics')
+    subject_name = models.ManyToManyField(Subject, related_name='topics')
+    
 
     def __str__(self):
         return self.topic_name
+    
+class SubTopics(models.Model):
+    sub_topic_name = models.CharField(max_length=150, default='')
+    subject_name = models.ManyToManyField(Subject, related_name='subtopics')
+    topic_name = models.ManyToManyField(Topic, related_name='subtopics')
+
+    def __str__(self):
+        return self.sub_topic_name
+
 
 
 class Question(models.Model):
@@ -35,18 +46,18 @@ class Question(models.Model):
         ('active', 'ACTIVE'),
         ('archived', 'ARCHIVED'),
     ]
-
+    grade = models.ManyToManyField(Grade)
     subject = models.ManyToManyField(Subject) 
     topic = models.ManyToManyField(Topic)
-    question_type = models.CharField(max_length=150, choices=QUESTION_TYPE, null=True)
-    question_text = models.TextField(null=True)
-    highlight = models.TextField(null=True)
-    approved = models.BooleanField(default=False)
-    correct_answer = models.CharField(max_length=200, null=True)
-    explanation = models.TextField(null=True)
+    sub_topic = models.ManyToManyField('SubTopics')
+    type_of_question = models.CharField(max_length=150, choices=QUESTION_TYPE, blank=True, default='two_choices')
+    question_text = models.TextField(blank=True)
+    highlight = models.TextField(blank=True)
+    correct_answer = models.CharField(max_length=200, blank=True)
+    explanation = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    question_status = models.CharField(max_length=150, choices=STATUS)
+    question_status = models.CharField(max_length=150, choices=STATUS, default='pending')
     diagram_image = models.ImageField(upload_to='images/', null=True, blank=True)
     user_ratings = models.ManyToManyField(User, through='QuestionRating')
     average_rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
@@ -58,7 +69,7 @@ class Question(models.Model):
     
 class AnswerOption(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answer_options')
-    answer_text = models.TextField(null=True)
+    answer_text = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,19 +1,20 @@
 from rest_framework import serializers
-from .models import *
+from . import models
 
 class AnswerOptionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AnswerOption
+        model = models.AnswerOption
         fields = ['id', 'answer_text']
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Subject
+        model = models.Subject
         fields = ['id', 'subject_name']
 
 class QuestionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Question
-        exclude = ['question_status', 'approved', 'topic']
     answer_options = AnswerOptionSerializer(many=True)
-    subject = SubjectSerializer(many=True)    
+    subject = SubjectSerializer(many=True) 
+    class Meta:
+        model = models.Question
+        exclude = ['question_status', 'topic']
+   
