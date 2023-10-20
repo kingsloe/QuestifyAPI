@@ -18,11 +18,11 @@ class Command(BaseCommand):
                 num_subjects_selected = random.choice([1, 2])
                 selected_subjects = random.sample(list(subjects), num_subjects_selected)
 
-                subtopics = models.SubTopics(sub_topic_name=sub_topic_name)
-                subtopics.save()
+                sub_topics = models.SubTopics(sub_topic_name=sub_topic_name)
+                sub_topics.save()
 
-                subtopics.subject_name.set(selected_subjects)
-                subtopics.topic_name.add(topic)
+                sub_topics.subject_name.set(selected_subjects)
+                sub_topics.topic_name.add(topic)
                 
                 # models.SubTopics.objects.bulk_create(subtopics)
         self.stdout.write(self.style.SUCCESS('Sub-topics successfully created'))        
